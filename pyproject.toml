@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "athena-bot"
+version = "0.1.0"
+description = ""
+authors = ["Pablo Albornoz <pablo.albornoz.n@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+"discord.py" = "^1.5.1"
+Pillow = "^8.0.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[tool.poetry.scripts]
+bot = "athena_bot:main"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

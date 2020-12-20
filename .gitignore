@@ -1,0 +1,6 @@
+cache/
+*.p
+*.egg-info/
+.vscode/
+assets/backgrounds/
+assets/images/
