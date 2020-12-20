@@ -2,5 +2,5 @@ cache/
 *.p
 *.egg-info/
 .vscode/
-assets/backgrounds/
-assets/images/
+assets/backgrounds/*.jpg
+assets/images/*.png
