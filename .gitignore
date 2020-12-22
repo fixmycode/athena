@@ -4,3 +4,5 @@ cache/
 .vscode/
 assets/backgrounds/*.jpg
 assets/images/*.png
+__pycache__/
+*.py[cod]

@@ -3,6 +3,9 @@ import re
 import os
 import pickle
 import logging
+import random
+import petname
+import asyncio
 from athena_bot import utils
 from datetime import datetime, timedelta
 from inspect import ismethod
@@ -34,6 +37,10 @@ class AthenaClient(discord.Client):
             'ezmode': self.__create_command(
                 self.easy_mode,
                 ['ez', 'easy mode']
+            ),
+            'teams': self.__create_command(
+                self.make_teams,
+                ['teams', 'groups', 'tournament', 'tourney', 'matches']
             )
         }
         self.data = utils.read_datafile(self.DATA_FILE)
@@ -130,3 +137,21 @@ class AthenaClient(discord.Client):
     async def easy_mode(self, message: discord.Message, battletag):
         dva = discord.utils.get(self.emojis, name='dva')
         return await message.channel.send(str(dva))
+
+    async def make_teams(self, message: discord.Message, battletag):
+        author = message.author
+        members = None
+        if author.voice and author.voice.channel and author.voice.channel.guild in self.guilds:
+            await message.channel.send('Making teams with members of the voice channel.')
+            members = filter(lambda m: not m.bot, author.voice.channel.members)
+        else:
+            await message.channel.send('You\'re not currently on the voice channel, so I will make the teams with members of this channel that are currently playing **Overwatch**.')
+            members = filter(lambda m: m.activity and m.activity.name.lower() == 'overwatch', message.channel.members)
+        member_names = list(map(lambda m: m.name, members))
+        if len(member_names) < 2:
+            await message.channel.send('There are not enough members for a balanced game.')
+            return
+        messages = utils.make_team_messages(member_names, 6)
+        for m in messages:
+            await message.channel.send(m)
+            await asyncio.sleep(1)
