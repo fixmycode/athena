@@ -141,13 +141,15 @@ class AthenaClient(discord.Client):
     async def make_teams(self, message: discord.Message, battletag):
         author = message.author
         members = None
+        print([m.activity for m in message.channel.members])
         if author.voice and author.voice.channel and author.voice.channel.guild in self.guilds:
             await message.channel.send('Making teams with members of the voice channel.')
             members = filter(lambda m: not m.bot, author.voice.channel.members)
         else:
-            await message.channel.send('You\'re not currently on the voice channel, so I will make the teams with members of this channel that are currently playing **Overwatch**.')
-            members = filter(lambda m: m.activity and m.activity.name.lower() == 'overwatch', message.channel.members)
+            await message.channel.send('You\'re not currently on the voice channel, so I will make the teams with members of this channel that are currently playing **Minecraft**.')
+            members = filter(lambda m: m.activity and m.activity.name.lower() == 'minecraft', message.channel.members)
         member_names = list(map(lambda m: m.name, members))
+        logger.debug('Making a team with ' + ' '.join(member_names))
         if len(member_names) < 2:
             await message.channel.send('There are not enough members for a balanced game.')
             return

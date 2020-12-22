@@ -37,6 +37,7 @@ def make_team_messages(member_names, capacity):
     teams, spectators = make_teams(member_names, capacity)
     cardinals = ['first', 'second', 'third', 'fourth', 'next']
     messages = []
+    bullets = list('🔵🔴🟢🟠🟡🟣')
     for i, t in enumerate(teams):
         cardinal = min(i, len(cardinals) - 1)
         team_name = petname.Generate(separator=' ', letters=10)
@@ -44,13 +45,13 @@ def make_team_messages(member_names, capacity):
             team_name = team_name + 'es'
         else:
             team_name = team_name + 's'
-        team_members = '* '+'\n* '.join(t) if len(t) > 1 else f'* {t[0]}'
-        messages.append(f'The {cardinals[cardinal]} team are  **The {team_name.title()}**:\n\n{team_members}\n')
+        team_members = f'{bullets[i]} '+f'\n{bullets[i]} '.join(t) if len(t) > 1 else f'{bullets[i]} {t[0]}'
+        messages.append(f'The {cardinals[cardinal]} team are  **The {team_name.title()}**:\n{team_members}\n')
     if spectators:
-        spect_names = '* '+'\n* '.join(spectators) if len(spectators) > 1 else f'* {spectators[0]}\n'
+        spect_names = '👁 '+'\n👁 '.join(spectators) if len(spectators) > 1 else f'👁 {spectators[0]}\n'
         many_match = 'these matches' if len(teams) > 2 else 'this match'
         if len(spectators) > 1:
-            messages.append(f'The honorable spectators for {many_match} are:\n\n{spect_names}\n')
+            messages.append(f'The honorable spectators for {many_match} are:\n{spect_names}\n')
         else:
-            messages.append(f'The honorable spectator for {many_match} is:\n\n{spect_names}\n')
+            messages.append(f'The honorable spectator for {many_match} is:\n{spect_names}\n')
     return messages

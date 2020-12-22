@@ -2,6 +2,7 @@ __version__ = '0.1.0'
 
 import os
 import logging
+import discord
 from athena_bot.client import AthenaClient
 
 logger = logging.getLogger(__name__)
@@ -12,10 +13,13 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 channel.setFormatter(formatter)
 logger.addHandler(channel)
 
+intents = discord.Intents.all()
+intents.typing = False
+
 def main():
     TOKEN = os.environ.get('DISCORD_TOKEN')
     if not TOKEN:
         logger.warn('TOKEN NOT FOUND! exiting...')
         exit()
-    client = AthenaClient()
+    client = AthenaClient(intents=intents)
     client.run(TOKEN)
