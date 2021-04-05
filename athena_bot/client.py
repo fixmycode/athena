@@ -167,13 +167,22 @@ class AthenaClient(discord.Client):
     async def world_clock(self, message: discord.Message, *args, **kwargs):
         us_timezones = ['US/Pacific', 'America/Phoenix', 'US/Central', 'US/Eastern']
         row_timezones = [('Bolivia', 'America/La_Paz', '🇧🇴'), ('Chile', 'America/Santiago', '🇨🇱'), ('Korea', 'Asia/Seoul', '🇰🇷')]
-        text = '🇺🇸'
+        us_flag = '🇺🇸'
         time_format = '%I:%M %p'
+        string_format = '{flag} **{name}** {time}'
         now = datetime.now()
+        lines = []
+
         for tz in us_timezones:
             name = pytz.timezone(tz).tzname(now)
-            text += f' *{name}* {utils.local_time(tz).strftime(time_format)}'
-        text += '\n'
+            time = utils.local_time(tz).strftime(time_format)
+            lines.append(string_format.format(flag=us_flag, name=name, time=time))
+        
         for name, tz, flag in row_timezones:
-            text += f'{flag} *{name}* {utils.local_time(tz).strftime(time_format)} '
+            local_now = utils.local_time(tz)
+            tf = '%I:%M %p on %A' if local_now.day != now.day else time_format
+            time = local_now.strftime(tf)
+            lines.append(string_format.format(flag=flag, name=name, time=time))
+        
+        text = '\n'.join(lines)
         await message.channel.send(text)
