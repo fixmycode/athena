@@ -6,6 +6,8 @@ import logging
 import random
 import petname
 import asyncio
+import pytz
+
 from athena_bot import utils
 from datetime import datetime, timedelta
 from inspect import ismethod
@@ -41,6 +43,10 @@ class AthenaClient(discord.Client):
             'teams': self.__create_command(
                 self.make_teams,
                 ['teams', 'groups', 'tournament', 'tourney', 'matches']
+            ),
+            'clock': self.__create_command(
+                self.world_clock,
+                ['time', 'clock', 'world clock', 'late', 'early']
             )
         }
         self.data = utils.read_datafile(self.DATA_FILE)
@@ -157,3 +163,17 @@ class AthenaClient(discord.Client):
         for m in messages:
             await message.channel.send(m)
             await asyncio.sleep(1)
+
+    async def world_clock(self, message: discord.Message):
+        us_timezones = ['US/Pacific', 'America/Phoenix', 'US/Central', 'US/Eastern']
+        row_timezones = [('Bolivia', 'America/La_Paz', '🇧🇴'), ('Chile', 'America/Santiago', '🇨🇱'), ('Korea', 'Asia/Seoul', '🇰🇷')]
+        text = '🇺🇸'
+        time_format = '%I:%M %p'
+        now = datetime.now()
+        for tz in us_timezones:
+            name = pytz.timezone(tz).tzname(now)
+            text += f' *{name}* {utils.local_time(tz).strftime(time_format)}'
+        text += '\n'
+        for name, tz, flag in row_timezones:
+            text += f'{flag} *{name}* {utils.local_time(tz).strftime(time_format)} '
+        await message.channel.send(text)

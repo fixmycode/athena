@@ -1,7 +1,10 @@
 import pickle
 import random
 import petname
+import pytz
 import re
+
+from datetime import datetime
 
 def read_datafile(filename):
     with open(filename, 'rb') as f:
@@ -55,3 +58,7 @@ def make_team_messages(member_names, capacity):
         else:
             messages.append(f'The honorable spectator for {many_match} is:\n{spect_names}\n')
     return messages
+
+def local_time(zone_name):
+    zone = pytz.timezone(zone_name)
+    return datetime.now(zone)
