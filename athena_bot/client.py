@@ -164,7 +164,7 @@ class AthenaClient(discord.Client):
             await message.channel.send(m)
             await asyncio.sleep(1)
 
-    async def world_clock(self, message: discord.Message):
+    async def world_clock(self, message: discord.Message, *args, **kwargs):
         us_timezones = ['US/Pacific', 'America/Phoenix', 'US/Central', 'US/Eastern']
         row_timezones = [('Bolivia', 'America/La_Paz', '🇧🇴'), ('Chile', 'America/Santiago', '🇨🇱'), ('Korea', 'Asia/Seoul', '🇰🇷')]
         text = '🇺🇸'
