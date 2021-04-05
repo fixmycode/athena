@@ -172,15 +172,17 @@ class AthenaClient(discord.Client):
         string_format = '{flag} **{name}** {time}'
         now = datetime.now()
         lines = []
+        us_day = 0
 
         for tz in us_timezones:
             name = pytz.timezone(tz).tzname(now)
-            time = utils.local_time(tz).strftime(time_format)
-            lines.append(string_format.format(flag=us_flag, name=name, time=time))
+            local_now = utils.local_time(tz)
+            us_day = max(local_now.day, us_day)
+            lines.append(string_format.format(flag=us_flag, name=name, time=local_now.strftime(time_format)))
         
         for name, tz, flag in row_timezones:
             local_now = utils.local_time(tz)
-            tf = '%I:%M %p on %A' if local_now.day != now.day else time_format
+            tf = '%I:%M %p on %A' if local_now.day != us_day else time_format
             time = local_now.strftime(tf)
             lines.append(string_format.format(flag=flag, name=name, time=time))
         
