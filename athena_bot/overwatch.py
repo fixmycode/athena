@@ -80,7 +80,7 @@ class Overwatch:
     
 
     async def full_refresh(self, forced=False):
-        for tag in self.cache.keys()
+        for tag in self.cache.keys():
             await self.get_stats(tag, refresh=forced)
     
 
