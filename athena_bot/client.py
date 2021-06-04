@@ -220,7 +220,12 @@ class AthenaClient(discord.Client):
             await message.channel.send('Data is not clear...')
             return
         if len(members) == 1:
+            tag = best[0]
             member = members[0]
+            path = await self.overwatch.get_profile_path(tag)
+            with open(path, 'rb') as profile:
+                badge = discord.File(profile, 'badge.png')
+                await message.channel.send(file=badge)
             await message.channel.send(f'The best {role} this season is {member.mention}, for now...')
             return
         mention_list = ' and '.join([m.mention for m in members])
