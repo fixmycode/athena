@@ -30,7 +30,7 @@ class AthenaClient(discord.Client):
             ),
             'show': self.__create_command(
                 self.show_user, 
-                ['show', 'stats', 'data', 'get']
+                ['show', 'stats', 'data', 'get', 'profile']
             ),
             'remove': self.__create_command(
                 self.remove_user, 
@@ -47,7 +47,11 @@ class AthenaClient(discord.Client):
             'clock': self.__create_command(
                 self.world_clock,
                 ['time', 'clock', 'world clock', 'late', 'early']
-            )
+            ),
+            'best': self.__create_command(
+                self.the_best,
+                ['best', 'best tank', 'bestest', 'top', 'number one', 'number 1']
+            ),
         }
         self.data = utils.read_datafile(self.DATA_FILE)
 
@@ -64,7 +68,11 @@ class AthenaClient(discord.Client):
         if is_command:
             command, battletag = self.__infer_command(message.content)
             if ismethod(command):
-                await command(message, battletag)
+                try:
+                    await command(message, battletag)
+                except Exception as e:
+                    logger.error(e)
+                    await message.channel.send('Sorry, I think there\'s an error on my programming...')
             else:
                 await message.channel.send(
                     f'Sorry {message.author.mention}, I did not understand your request.'
@@ -188,3 +196,33 @@ class AthenaClient(discord.Client):
         
         text = '\n'.join(lines)
         await message.channel.send(text)
+
+    async def the_best(self, message: discord.Message, *args, **kwargs):
+        match = re.search(r'(tank|damage|support|healer|dps|shield)', message.content.lower())
+        if not match:
+            await message.channel.send('The criteria is too wide, try selecting a role')
+            return
+        role = match.group(1)
+        await message.channel.send('Consulting database...')
+        await self.overwatch.full_refresh()
+        best = self.overwatch.find_best(role)
+        if not best:
+            await message.channel.send('I can not determine that at this time...')
+            return
+        members = []
+        for tag in best:
+            user_id = self.data.get('tags', {}).get(tag)
+            if not user_id:
+                continue
+            member = discord.utils.find(lambda m: m.id == user_id, message.channel.guild.members)
+            members.append(member)
+        if not members:
+            await message.channel.send('Data is not clear...')
+            return
+        if len(members) == 1:
+            member = members[0]
+            await message.channel.send(f'The best {role} this season is {member.mention}, for now...')
+            return
+        mention_list = ' and '.join([m.mention for m in members])
+        await message.channel.send(f'There\'s currently a tie between {mention_list} for the title of best {role}')
+            

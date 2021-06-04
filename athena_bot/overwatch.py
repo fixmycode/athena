@@ -77,6 +77,42 @@ class Overwatch:
             except AssertionError as e:
                 logger.info(f'error reading stats for {battletag}')
                 return False
+    
+
+    async def full_refresh(self, forced=False):
+        for tag in self.cache.keys()
+            await self.get_stats(tag, refresh=forced)
+    
+
+    def find_best(self, role):
+        role = 'support' if role in ['healer', 'support'] else role
+        role = 'damage' if role in ['dps', 'damage dealer'] else role
+        role = 'tank' if role in ['tank', 'shield'] else role
+        role_list = []
+        for battletag, data in self.cache.items():
+            ratings = data.get('ratings')
+            if not ratings:
+                continue
+            for rating in ratings:
+                if rating['role'] == role:
+                    role_list.append((battletag, rating['level']))
+                    break
+        if not role_list:
+            return None
+        role_list.sort(key=lambda t: -t[1])
+        if len(role_list) == 1:
+            return role_list[0][0]
+        result = {}
+        for i in range(len(role_list)):
+            tag_a, level_a = role_list[i]
+            tag_b, level_b = role_list[i+1]
+            if level_a > level_b:
+                return [tag_a,]
+            result.update({tag_a, tag_b})
+            if i+1 < len(role_list):
+                i += 1
+        return list(result)
+            
 
     def get_font(self, font_name, size):
         try:
